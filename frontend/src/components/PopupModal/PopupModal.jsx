@@ -2,6 +2,8 @@
 import axios from "axios";
 // React
 import React, { useEffect, useRef, useState } from "react";
+//
+import { useCookies } from "react-cookie";
 
 export default function PopupModal({ name, email, id, fetchData }) {
   const btn = useRef(null);
@@ -22,16 +24,25 @@ export default function PopupModal({ name, email, id, fetchData }) {
     }));
   };
 
+  const [cookies, setCookie] = useCookies(["token"]);
   const apiUrl = process.env.REACT_APP_API_URL;
   const editUser = async (id) => {
     setDisablBtn(true);
     try {
-      const response = await axios.post(`${apiUrl}/api/user/update/${id}`, {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        password_confirmation: formData.password,
-      });
+      const response = await axios.post(
+        `${apiUrl}/api/user/update/${id}`,
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          password_confirmation: formData.password,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + cookies.token,
+          },
+        }
+      );
       // console.log(response);
       await fetchData();
       btn.current.click();

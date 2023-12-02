@@ -9,8 +9,12 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import DashboardLayout from "./layout/DashboardLayout";
 import Users from "./pages/Users/Users";
 import Create from "./pages/Create/Create";
+import Products from "./pages/Products/Products";
+import AddProduct from "./pages/Add-product/AddProduct";
+import UpdateProduct from "./pages/Update-product/UpdateProduct";
 // 
 import RequireAuth from "./protected-routes/RequireAuth";
+// import RefreshToken from "./refresh-token/RefreshToken";
 
 function App() {
 
@@ -23,13 +27,20 @@ function App() {
               <Route path="login" element={<Login />} />
           </Route>
 
-          <Route element={<RequireAuth />}>
-              <Route path="dashboard" element={<DashboardLayout />}>
-                  <Route index element={<Dashboard />} />
-                  <Route path="users" element={<Users />} />
-                  <Route path="create" element={<Create />} />
+
+
+          {/* <Route element={<RefreshToken />}> */}
+              <Route element={<RequireAuth />}>
+                  <Route path="dashboard" element={<DashboardLayout />}>
+                      <Route index element={<Dashboard />} />
+                      <Route path="users" element={<Users />} />
+                      <Route path="create" element={<Create />} />
+                      <Route path="add-product" element={<AddProduct />} />
+                      <Route path="products" element={<Products />} />
+                      <Route path="products/:id" element={<UpdateProduct />} />
+                  </Route>
               </Route>
-          </Route>
+          {/* </Route> */}
 
       </Route>
     )

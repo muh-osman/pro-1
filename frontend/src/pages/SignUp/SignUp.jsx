@@ -1,21 +1,22 @@
 // React
-import { useState, useContext } from "react";
+import { useState, useContext, useLayoutEffect, useEffect } from "react";
 // React router
 import { useNavigate } from "react-router-dom";
 // SASS
 import style from "./SignUp.module.scss";
 // Axios
 import axios from "axios";
-// Context
-import { UserContext } from "../../contexts/UserProvider"
 // Icons
 import { FaLock } from "react-icons/fa6";
+// Cookie
+import { useCookies } from 'react-cookie';
 
 
 
 export default function SignUp() {
 
-  const { userAuth, setUserAuth } = useContext(UserContext);
+  const [cookies, setCookie] = useCookies(['token']);
+
 
   const navigate = useNavigate()
 
@@ -54,9 +55,12 @@ export default function SignUp() {
       const email = response.data.data.user.email
       const id = response.data.data.user.id
 
-      // console.log(token, name, email, id)
 
-      setUserAuth({token, name, email, id})
+      setCookie('token', token, { path: '/' });
+      // setCookie('name', name, { path: '/' });
+      // setCookie('email', email, { path: '/' });
+      // setCookie('id', id, { path: '/' });
+
       navigate("/", { replace: true })
 
     } catch (err) {
@@ -65,6 +69,10 @@ export default function SignUp() {
       setError(err.response.data.message);
     }
   }
+
+  useEffect(() => {
+    cookies.token && navigate("/")
+  }, [])
 
   return (
     <div className={style.container}>

@@ -1,37 +1,34 @@
-// React router
+// React
 import { useContext, useEffect, useState } from "react";
 // Sass
-import style from "./Users.module.scss";
+import style from "./Product.module.scss";
 // Axios
 import axios from "axios";
 // Icons
 import { FaTrashCan, FaPenToSquare } from "react-icons/fa6";
-// Components
-import PopupModal from "../../components/PopupModal/PopupModal";
+// Cookie
 import { useCookies } from "react-cookie";
-// Context
-// import { UserContext } from "../../contexts/UserProvider";
+// React router
+import { Link } from "react-router-dom";
 
-export default function Users() {
-  // const { userAuth, setUserAuth } = useContext(UserContext);
-  // const token = userAuth.token;
+
+export default function Product() {
 
   const [cookies, setCookie] = useCookies(['token']);
-  let token = cookies.token
 
 
-  const [users, setUsers] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/api/user/show`, {
+      const response = await axios.get(`${apiUrl}/api/product/show`, {
         headers: {
-          Authorization: "Bearer " + token,
+          Authorization: "Bearer " + cookies.token,
         },
       });
-      setUsers(response.data);
+      setProducts(response.data);
       setLoading(false);
       // console.log(response.data)
     } catch (err) {
@@ -43,11 +40,11 @@ export default function Users() {
     fetchData();
   }, []);
 
-  const deleteUser = async (id) => {
+  const deleteProduct = async (id) => {
     try {
-      const response = await axios.delete(`${apiUrl}/api/user/delete/${id}`, {
+      const response = await axios.delete(`${apiUrl}/api/product/delete/${id}`, {
         headers: {
-          Authorization: "Bearer " + token,
+          Authorization: "Bearer " + cookies.token,
         },
       });
       fetchData();
@@ -58,31 +55,22 @@ export default function Users() {
 
 
 
-  const table = users.map((user) => (
-    <tr key={user.id}>
-      <th scope="row">{user.id}</th>
-      <td>{user.name}</td>
-      <td>{user.email}</td>
+  const table = products.map((product) => (
+    <tr key={product.id}>
+      <th scope="row">{product.id}</th>
+      <td>{product.title}</td>
+      <td>{product.description}</td>
       <td>
         <div className={style.btn_box}>
-          <button
-            data-bs-toggle="modal"
-            data-bs-target={`#exampleModal${user.id}`}
-          >
+          <Link to={`${product.id}`}>
             <FaPenToSquare />
-          </button>
+          </Link>
 
-          <button onClick={() => deleteUser(user.id)}>
+          <button onClick={() => deleteProduct(product.id)}>
             <FaTrashCan />
           </button>
         </div>
 
-        <PopupModal
-          name={user.name}
-          email={user.email}
-          id={user.id}
-          fetchData={fetchData}
-        />
       </td>
     </tr>
   ));
@@ -96,8 +84,8 @@ export default function Users() {
           <thead>
             <tr>
               <th scope="col">#</th>
-              <th scope="col">User</th>
-              <th scope="col">Email</th>
+              <th scope="col">Title</th>
+              <th scope="col">Description</th>
               <th scope="col">Action</th>
             </tr>
           </thead>

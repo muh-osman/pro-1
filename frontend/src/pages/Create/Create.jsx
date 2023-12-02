@@ -8,6 +8,8 @@ import style from "./Create.module.scss";
 import axios from "axios";
 // Icons
 import { FaLock } from "react-icons/fa6";
+// 
+import { useCookies } from "react-cookie";
 
 export default function Create() {
 
@@ -30,6 +32,7 @@ export default function Create() {
     }));
   };
 
+  const [cookies, setCookie] = useCookies(["token"]);
   const apiUrl = process.env.REACT_APP_API_URL;
   async function handleSubmit(e) {
     e.preventDefault();
@@ -40,6 +43,10 @@ export default function Create() {
         email: formData.email,
         password: formData.password,
         password_confirmation: formData.password,
+      },{
+        headers: {
+          Authorization: "Bearer " + cookies.token,
+        },
       });
       // console.log(response);
       navigate("/dashboard/users")

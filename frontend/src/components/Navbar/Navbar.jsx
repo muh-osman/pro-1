@@ -5,20 +5,36 @@ import { useContext } from "react";
 // SASS
 import style from "./Navbar.module.scss";
 // Logo
-import logo from "../../assets/images/uniswap-uni-logo.png"
-// Context
-import { UserContext } from "../../contexts/UserProvider";
+import logo from "../../assets/images/uniswap-uni-logo.png";
+// Cookie
+import { useCookies } from "react-cookie";
+// Axios
+import axios from "axios";
 
 
 export default function Navbar() {
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
 
-  const { userAuth, setUserAuth } = useContext(UserContext);
+  const apiUrl = process.env.REACT_APP_API_URL;
 
+  const handleLogOut = async () => {
+    try {
+      const response = await axios.post(`${apiUrl}/api/logout`, null, {
+        headers: {
+          Authorization: "Bearer " + cookies.token,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    }
+    // Remove all cookies
+    removeCookie("token", { path: "/" });
+  };
 
   return (
     <nav className="navbar navbar-expand-lg text-white bg-dark">
       <div className="container">
-        <Link style={{padding: 0}} to="/" className="navbar-brand text-white">
+        <Link style={{ padding: 0 }} to="/" className="navbar-brand text-white">
           <img className={style.logo} src={logo} alt="logo" />
         </Link>
         <button
@@ -29,7 +45,7 @@ export default function Navbar() {
           aria-controls="navbarSupportedContent"
           aria-expanded="false"
           aria-label="Toggle navigation"
-          style={{backgroundColor: "#ff007a"}}
+          style={{ backgroundColor: "#ff007a" }}
         >
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -37,19 +53,27 @@ export default function Navbar() {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link to="/" className="nav-link active text-white" aria-current="page">
+              <Link
+                to="/"
+                className="nav-link active text-white"
+                aria-current="page"
+              >
                 Home
               </Link>
             </li>
             <li className="nav-item">
-              <Link to="dashboard" className="nav-link active text-white  " aria-current="page">
+              <Link
+                to="dashboard"
+                className="nav-link active text-white  "
+                aria-current="page"
+              >
                 Dashboard
               </Link>
             </li>
           </ul>
 
           <div className="d-flex">
-            {!userAuth.token ? (
+            {!cookies.token ? (
               <>
                 <Link to="signup" className="btn btn-outline-primary me-2">
                   SignUp
@@ -60,12 +84,10 @@ export default function Navbar() {
                 </Link>
               </>
             ) : (
-              <button onClick={()=> setUserAuth({
-                token: "",
-                name: "",
-                id: "",
-                email: "",
-              })} className="btn btn-outline-primary">
+              <button
+                onClick={handleLogOut}
+                className="btn btn-outline-primary"
+              >
                 LogOut
               </button>
             )}

@@ -1,5 +1,5 @@
 // React
-import { useContext, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 // SASS
 import style from "./Login.module.scss";
 // Axios
@@ -7,16 +7,15 @@ import axios from "axios";
 // Icons
 import { BiLogIn } from "react-icons/bi";
 // 
-import { UserContext } from "../../contexts/UserProvider";
-// 
 import { useNavigate } from "react-router-dom";
+// Cookie
+import { useCookies } from 'react-cookie';
 
 
 
 export default function Login() {
 
-
-  const { userAuth, setUserAuth } = useContext(UserContext);
+  const [cookies, setCookie] = useCookies(['token']);
 
   const navigate = useNavigate()
 
@@ -44,16 +43,21 @@ export default function Login() {
         email: formData.email,
         password: formData.password,
       });
-      console.log(response);
+      // console.log(response);
 
       const token = response.data.data.token
       const name = response.data.data.user.name
       const email = response.data.data.user.email
       const id = response.data.data.user.id
 
-      // console.log(token, name, email, id)
 
-      setUserAuth({token, name, email, id})
+      setCookie('token', token, { path: '/' });
+      // setCookie('name', name, { path: '/' });
+      // setCookie('email', email, { path: '/' });
+      // setCookie('id', id, { path: '/' });
+
+      // console.log(cookies.token);
+
       navigate("/", { replace: true })
 
     } catch (err) {
@@ -62,6 +66,12 @@ export default function Login() {
       setError(err.response.data.message);
     }
   }
+
+
+  useEffect(() => {
+    cookies.token && navigate("/")
+  }, [])
+  
 
   return (
     <div className={style.container}>
